@@ -352,7 +352,7 @@ async function saveCombinedDataWithICICToDatabase(data) {
                         amount: item.matchingStatements[0].depositAmt || null,
                         clearance_Date: item.matchingStatements[0].transactionDate || null,
                         student_Name: item.borrowerName,
-                        student_Mobile_No:item.borrowerMobileNumber,
+                        student_Mobile_No: item.borrowerMobileNumber,
                         student_Email_ID: item.emailId,
                         course_Name: item.courseName,
                         finance_charges: item.subventionFinanceCharges,
@@ -369,6 +369,8 @@ async function saveCombinedDataWithICICToDatabase(data) {
             }
         }
         console.log('Data saved to the database.');
+        return 'Data saved to the database.'; // Return success message
+
     } catch (error) {
         console.error('Error saving data to the database:', error);
         throw error;
@@ -421,8 +423,8 @@ router.get('/propelled-only-data', async (req, res) => {
                 matchingStatements,
             };
         });
-        saveCombinedDataWithICICToDatabase(data)
-        res.json({ data });
+        const saveResult = await saveCombinedDataWithICICToDatabase(data);
+        res.json({ data, saveResult });
     } catch (error) {
         console.error('Error fetching combined data:', error);
         res.status(500).json({ error: 'Internal Server Error' });

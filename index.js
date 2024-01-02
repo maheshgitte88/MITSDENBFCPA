@@ -4,6 +4,7 @@ const app = express();
 const GreaquestRoutes = require('./Routes/Greaquest');
 const IciciRoutes = require('./Routes/IciciBank');
 const Propelled = require('./Routes/Propelled')
+const moment = require('moment');
 
 const sequelize = require('./config');
 const LoanFeeOnlyTranstions = require('./Models/LoanFeeOnlyTranstions');
@@ -67,7 +68,13 @@ app.get('/api/transaction/mob/:studentMobileNo', async (req, res) => {
     });
 
     if (transaction) {
-      res.json(transaction);
+      const formattedTransactions = transaction.map(transaction => ({
+        ...transaction.dataValues,
+        date_of_Payment: moment(transaction.date_of_Payment, 'MM/DD/YYYY').format('YYYY-MM-DD'),
+        clearance_Date: moment(transaction.clearance_Date, 'DD/MMM/YYYY').format('YYYY-MM-DD'),
+      }));
+
+      res.json(formattedTransactions);
     } else {
       res.status(404).json({ error: 'Transaction not found' });
     }
@@ -100,7 +107,13 @@ app.get('/api/transaction/email/:student_Email_ID', async (req, res) => {
     });
 
     if (transaction) {
-      res.json(transaction);
+      const formattedTransactions = transaction.map(transaction => ({
+        ...transaction.dataValues,
+        date_of_Payment: moment(transaction.date_of_Payment, 'MM/DD/YYYY').format('YYYY-MM-DD'),
+        clearance_Date: moment(transaction.clearance_Date, 'DD/MMM/YYYY').format('YYYY-MM-DD'),
+      }));
+
+      res.json(formattedTransactions);
     } else {
       res.status(404).json({ error: `Student Transaction not found with ${studentEmailId}` });
     }
@@ -127,11 +140,58 @@ app.get('/api/all-nbfc-transactions', async (req, res) => {
         'Bank_tranId'
       ]
     });
-    res.json(transactions);
+    const formattedTransactions = transactions.map(transaction => ({
+      ...transaction.dataValues,
+      date_of_Payment: moment(transaction.date_of_Payment, ['MM/DD/YYYY', 'DD-MM-YYYY']).format('YYYY-MM-DD'),
+      clearance_Date: moment(transaction.clearance_Date, 'DD/MMM/YYYY').format('YYYY-MM-DD'),
+    }));
+
+    res.json(formattedTransactions);
   } catch (error) {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+
+
+app.get('/api/limit/all-nbfc-transactions', async (req, res) => {
+  try {
+    const { limit } = req.query;
+
+    // Use sequelize options to apply the limit
+    const queryOptions = {
+      attributes: [
+        'id',
+        'date_of_Payment',
+        'mode_of_payment',
+        'instrument_No',
+        'amount',
+        'clearance_Date',
+        'student_Name',
+        'student_Email_ID',
+        'student_Mobile_No',
+        'course_Name',
+        'finance_charges',
+        'Bank_tranId'
+      ],
+      limit: limit ? parseInt(limit, 10) : undefined, // Parse limit as an integer
+    };
+
+    const transactions = await LoanFeeOnlyTranstions.findAll(queryOptions);
+
+    const formattedTransactions = transactions.map(transaction => ({
+      ...transaction.dataValues,
+      date_of_Payment: moment(transaction.date_of_Payment, ['MM/DD/YYYY', 'DD-MM-YYYY']).format('YYYY-MM-DD'),
+      clearance_Date: moment(transaction.clearance_Date, 'DD/MMM/YYYY').format('YYYY-MM-DD'),
+    }));
+
+    res.json(formattedTransactions);
+  } catch (error) {
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+
+
 
 app.get('/api/em-transaction', async (req, res) => {
   const { email, mobile } = req.query;
@@ -166,7 +226,13 @@ app.get('/api/em-transaction', async (req, res) => {
     });
 
     if (transaction) {
-      res.json(transaction);
+      const formattedTransactions = transaction.map(transaction => ({
+        ...transaction.dataValues,
+        date_of_Payment: moment(transaction.date_of_Payment, 'MM/DD/YYYY').format('YYYY-MM-DD'),
+        clearance_Date: moment(transaction.clearance_Date, 'DD/MMM/YYYY').format('YYYY-MM-DD'),
+      }));
+
+      res.json(formattedTransactions);
     } else {
       res.status(404).json({ error: 'Student Transaction not found' });
     }

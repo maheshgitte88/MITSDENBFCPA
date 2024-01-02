@@ -93,11 +93,11 @@ function GrerqUploadStatement() {
   }
 
   return (
-    <div className="container mt-2">
-      <h5>Propelled Statement Excel File</h5>
+    <div className="container mt-2 mb-5">
+      <h6>Propelled Statement Excel File</h6>
       <div {...getRootPropsExcel()} style={dropzoneStyle}>
         <input {...getInputPropsExcel()} />
-        <p class="btn btn-secondary">Drag and drop or click to select</p>
+        <p className="btn btn-secondary">Drag and drop or click to select</p>
       </div>
       {excelFile && (
         <div>
@@ -108,10 +108,10 @@ function GrerqUploadStatement() {
 
       <hr />
 
-      <h5>Greayquest Statement Excel File</h5>
+      <h6>Greayquest Statement Excel File</h6>
       <div {...getRootPropsUpload()} style={dropzoneStyle}>
         <input {...getInputPropsUpload()} />
-        <p class="btn btn-secondary">Drag and drop or click to select</p>
+        <p className="btn btn-secondary">Drag and drop or click to select</p>
       </div>
       {uploadFile && (
         <div>
@@ -120,10 +120,10 @@ function GrerqUploadStatement() {
         </div>
       )}
       <hr />
-      <h5>Icici Bank Statement Excel File</h5>
+      <h6>Icici Bank Statement Excel File</h6>
       <div {...getRootPropsIciciExcel()} style={dropzoneStyle}>
         <input {...getInputPropsIciciExcel()} />
-        <p class="btn btn-secondary">Drag and drop or click to select</p>
+        <p className="btn btn-secondary">Drag and drop or click to select</p>
       </div>
       {uploadIciciFile && (
         <div>
@@ -138,15 +138,15 @@ function GrerqUploadStatement() {
 
 
 const dropzoneStyle = {
-  width: '60%',
-  height: '100px',
+  width: '70%',
+  height: '90px',
   border: '2px dashed blue',
-  borderRadius: '4px',
+  borderRadius: '5px',
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
   cursor: 'pointer',
-  margin: '20px auto',
+  margin: '18px auto',
 };
 
 

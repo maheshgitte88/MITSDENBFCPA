@@ -1,97 +1,109 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { CSVLink } from 'react-csv';
-import './App.css';
-import GrerqUploadStatement from './Comp/GrerqUploadStatement';
-
-
-
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { CSVLink } from "react-csv";
+import "./App.css";
+import GrerqUploadStatement from "./Comp/GrerqUploadStatement";
+import { toast } from 'react-toastify';
 function App() {
-  const [data, setData] = useState([]);
-  const [dataWithIcici, setDatawithIcici] = useState([])
-  useEffect(() => {
-    axios.get('http://65.1.54.123:9000/api/loanFeeTransactions')
-      .then(response => setData(response.data))
-      .catch(error => console.error('Error fetching data:', error));
+  const [data, setData] = useState(null);
+  const [report, setReport] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-    // axios.get('http://localhost:9000/api/FeeFromLoanTracker')
-    //   .then(response => setDatawithIcici(response.data))
-    //   .catch(error => console.error('Error fetching data:', error));
-  }, []);
+  useEffect(() => {
+    axios
+      .get("http://65.1.54.123:9000/api/loanFeeTransactions")
+      .then((response) => {
+        if (response.data) {
+          setData(response.data);
+        }
+      })
+      .catch((error) => console.error("Error fetching data:", error));
+  }, [report]);
+  console.log(data)
 
   const headers = [
-    { label: 'Date of Payment', key: 'date_of_Payment' },
-    { label: 'Mode of Payment', key: 'mode_of_payment' },
-    { label: 'MITSDE Bank Name', key: 'MITSDE_Bank_Name' },
-    { label: 'Instrument No', key: 'instrument_No' },
-    { label: 'Amount', key: 'amount' },
-    { label: 'Clearance Date', key: 'clearance_Date' },
-    { label: 'Student Name', key: 'student_Name' },
-    { label: 'Student Email ID', key: 'student_Email_ID' },
-    { label: 'Course Name', key: 'course_Name' },
-    { label: 'Finance Charges', key: 'finance_charges' },
-    { label: 'Bank TranId', key: 'Bank_tranId' },
-    { label: 'Transaction Remarks', key: 'transactionRemarks' },
+    { label: "Date of Payment", key: "date_of_Payment" },
+    { label: "Mode of Payment", key: "mode_of_payment" },
+    { label: "MITSDE Bank Name", key: "MITSDE_Bank_Name" },
+    { label: "Instrument No", key: "instrument_No" },
+    { label: "Amount", key: "amount" },
+    { label: "Clearance Date", key: "clearance_Date" },
+    { label: "Student Name", key: "student_Name" },
+    { label: "Student Email ID", key: "student_Email_ID" },
+    { label: "Student Mobile No", key: "student_Mobile_No" },
+    { label: "Course Name", key: "course_Name" },
+    { label: "Finance Charges", key: "finance_charges" },
+    { label: "Bank TranId", key: "Bank_tranId" },
+    { label: "Transaction Remarks", key: "transactionRemarks" },
   ];
-  // console.log(dataWithIcici, 34)
 
   const todayDate = new Date();
-  const options = { day: 'numeric', month: 'short', year: 'numeric' };
+  const options = { day: "numeric", month: "short", year: "numeric" };
 
-  const formattedDate = new Intl.DateTimeFormat('en-US', options).format(todayDate);
+  const formattedDate = new Intl.DateTimeFormat("en-US", options).format(
+    todayDate
+  );
 
-  const Generatereport = async () => {
-    const TrackerOnlyPrope = await axios.get('http://localhost:9000/api/propelled-only-data');
-    const TrackerOnlyGreq = await axios.get('http://localhost:9000/api/greaquest-only-data');
-    alert('Congratulations! Report Generated Successfully.');
-  }
-  // const GeneratereportWithIcici = async () => {
-  //   const TrackerWithIciciPrope = await axios.get('http://65.1.54.123:9000/api/propelled-combined-data');
-  //   const TrackerWithIciciGreq = await axios.get('http://65.1.54.123:9000/api/combined-data');
-  //   alert('Congratulations! Report Generated Successfully.');
-  // }
+  const generateReport = async () => {
+    setLoading(true); // Set loading to true when starting the process
+
+    try {
+      const TrackerOnlyGreq = await axios.get("http://65.1.54.123:9000/api/greaquest-only-data");
+      const TrackerOnlyPrope = await axios.get("http://65.1.54.123:9000/api/propelled-only-data");
+      console.log(TrackerOnlyGreq.data)
+      console.log("Server response:", TrackerOnlyPrope.data);
+      setReport(true);
+      toast.success("Congratulations! Report Generated Successfully..!");
+    } catch (error) {
+      console.error("Error generating report:", error);
+    } finally {
+      setLoading(false); // Set loading to false when the process is completed
+    }
+  };
 
   return (
     <div className="container">
       <nav className="navbar navbar-expand-lg navbar-light bg-light">
-        <a className="navbar-brand text-white ps-3" href="#"><img style={{ width: "150px" }} src='https://res.cloudinary.com/dtgpxvmpl/image/upload/v1702100329/mitsde_logo_vmzo63.png' /></a>
-        <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
-          aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-          <span className="navbar-toggler-icon"></span>
-        </button>
-        <div className="collapse navbar-collapse" id="navbarNav">
-          <ul className="navbar-nav ml-auto">
-            <li className='ps-2' >
-              <button className="btn btn-primary">
-                <CSVLink className="text-white" data={data} headers={headers} filename={`${formattedDate}_Only_Traker.csv`}>
-                  Download Only Traker
-                </CSVLink>
-              </button>
-            </li>
-            {/* <li className='ps-2'>
-              <button className="btn btn-primary">
-                <CSVLink className="text-white" data={dataWithIcici} headers={headers} filename={`${formattedDate}_Tracker_With_ICICI_BANK.csv`}>
-                  Download Traker With ICICI BANK
-                </CSVLink>
-              </button>
-            </li> */}
-            <li className='ps-5'>
-
-            </li>
-            <li className='ps-5'>
-              <button className="btn btn-primary" onClick={Generatereport}>
-                Generate Report
-              </button>
-            </li>
-            {/* <li className='ps-2'>
-              <button className="btn btn-primary" onClick={GeneratereportWithIcici}>
-                Generate Report With ICICI
-              </button>
-            </li> */}
-          </ul>
-        </div>
+        <a className="navbar-brand text-white ps-3" href="/">
+          <img
+            style={{ width: "150px" }}
+            src="https://res.cloudinary.com/dtgpxvmpl/image/upload/v1702100329/mitsde_logo_vmzo63.png"
+            alt='logo'
+          />
+        </a>
       </nav>
-      {/* <Payment /> */}
+
+      <div className="d-flex justify-content-around">
+        {data && data.length > 0 && (
+          <button
+            className="btn btn-primary"
+            data-toggle="tooltip"
+            data-placement="top"
+            title="This Button Only Download Tracker"
+          >
+            <CSVLink
+              className="text-white"
+              data={data}
+              headers={headers}
+              filename={`${formattedDate}_Only_Tracker.csv`}
+            >
+              Download Tracker
+            </CSVLink>
+          </button>
+        )}
+
+        <button
+          className="btn btn-primary"
+          data-toggle="tooltip"
+          data-placement="top"
+          title="This Button Only genrate Tracker, Click only if not genrated Today"
+          onClick={generateReport}
+        >
+          {loading ? <><div className="spinner-border text-warning" role="status">
+            <span className="sr-only">Loading...</span>
+          </div></> : "Generate Traker"}
+        </button>
+      </div>
       <GrerqUploadStatement />
     </div>
   );

@@ -7,6 +7,8 @@ function GrerqUploadStatement() {
   const [excelFile, setExcelFile] = useState(null);
   const [uploadFile, setUploadFile] = useState(null);
   const [uploadIciciFile, setUploadIciciFile] = useState(null);
+  const [uploadFibeFile, setUploadFibeFile] = useState(null);
+
 
   const onDropExcel = (acceptedFiles) => {
     setExcelFile(acceptedFiles[0]);
@@ -18,6 +20,10 @@ function GrerqUploadStatement() {
   const onDropIcicicExcel = (acceptedFiles) => {
     setUploadIciciFile(acceptedFiles[0]);
   };
+  const onDropFibeExcel = (acceptedFiles) => {
+    setUploadFibeFile(acceptedFiles[0]);
+  };
+
   const { getRootProps: getRootPropsExcel, getInputProps: getInputPropsExcel } = useDropzone({
     onDrop: onDropExcel,
     accept: '.xlsx', // Adjust to the accepted file type
@@ -34,6 +40,13 @@ function GrerqUploadStatement() {
     accept: '.xlsx', // Adjust to the accepted file type
     maxFiles: 1, // Allow only one file to be uploaded
   });
+
+  const { getRootProps: getRootPropsFibeExcel, getInputProps: getInputPropsFibeExcel } = useDropzone({
+    onDrop: onDropFibeExcel,
+    accept: '.xlsx', // Adjust to the accepted file type
+    maxFiles: 1, // Allow only one file to be uploaded
+  });
+
 
   const handleExcelUpload = async () => {
     if (!excelFile) {
@@ -92,6 +105,25 @@ function GrerqUploadStatement() {
     }
   }
 
+
+  const handleIFibeExcelUpload = async () => {
+    if (!uploadFibeFile) {
+      alert('Please select an Excel file.');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('excelFile', uploadFibeFile);
+
+    try {
+      await axios.post('http://65.1.54.123:9000/api/Fibe-statement', formData);
+      alert('Excel file uploaded successfully!');
+      setUploadFibeFile(null)
+    } catch (error) {
+      console.error('Error uploading Excel file:', error.message);
+      alert('Error uploading Excel file.');
+    }
+  }
   return (
     <div className="container mt-2 mb-5">
       <h6>Propelled Statement Excel File</h6>
@@ -129,6 +161,18 @@ function GrerqUploadStatement() {
         <div>
           <p>Selected File: {uploadIciciFile.name}</p>
           <button className='btn btn-primary' onClick={handleIciciExcelUpload}>Upload File</button>
+        </div>
+      )}
+      <hr />
+      <h6>FiBi NBFC Statement Excel File</h6>
+      <div {...getRootPropsFibeExcel()} style={dropzoneStyle}>
+        <input {...getInputPropsFibeExcel()} />
+        <p className="btn btn-secondary">Drag and drop or click to select</p>
+      </div>
+      {uploadFibeFile && (
+        <div>
+          <p>Selected File: {uploadFibeFile.name}</p>
+          <button className='btn btn-primary' onClick={handleIFibeExcelUpload}>Upload File</button>
         </div>
       )}
     </div>

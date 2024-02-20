@@ -4,12 +4,13 @@ const app = express();
 const GreaquestRoutes = require('./Routes/Greaquest');
 const IciciRoutes = require('./Routes/IciciBank');
 const Propelled = require('./Routes/Propelled')
+const Fibe = require('./Routes/Fibe')
+
 const moment = require('moment');
 
 const sequelize = require('./config');
 const LoanFeeOnlyTranstions = require('./Models/LoanFeeOnlyTranstions');
 const FeeFromLoanTracker = require('./Models/FeeFromLoanTracker');
-
 app.use(express.json());
 app.use(cors());
 
@@ -20,6 +21,9 @@ sequelize.sync().then(() => {
 app.use('/api', GreaquestRoutes);
 app.use('/api', IciciRoutes);
 app.use('/api', Propelled);
+app.use('/api', Fibe);
+
+
 
 app.get('/api/loanFeeTransactions', async (req, res) => {
   try {
@@ -240,8 +244,6 @@ app.get('/api/em-transaction', async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
-
-
 
 
 const PORT = process.env.PORT || 9000;
